@@ -1,0 +1,19 @@
+[project]
+name = "static-site-generator"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Tegar Wijaya Kusuma", email = "64220909+tgr-wjya@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "ruff>=0.16.10",
+]
+
+[project.scripts]
+static-site-generator = "static_site_generator:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
