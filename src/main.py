@@ -46,19 +46,25 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         output_file.write(generated)
 
 
-def generate_pages(content_dir: str, template_path: str, public_dir: str) -> None:
-    for root, _, files in os.walk(content_dir):
+def generate_pages_recursive(
+    dir_path_content: str, template_path: str, dest_dir_path: str
+) -> None:
+    for root, _, files in os.walk(dir_path_content):
         for filename in sorted(files):
             if not filename.endswith(".md"):
                 continue
 
             source_path = os.path.join(root, filename)
-            relative_path = os.path.relpath(source_path, content_dir)
+            relative_path = os.path.relpath(source_path, dir_path_content)
             destination_path = os.path.join(
-                public_dir,
+                dest_dir_path,
                 os.path.splitext(relative_path)[0] + ".html",
             )
             generate_page(source_path, template_path, destination_path)
+
+
+def generate_pages(content_dir: str, template_path: str, public_dir: str) -> None:
+    generate_pages_recursive(content_dir, template_path, public_dir)
 
 
 def main() -> None:
@@ -73,7 +79,7 @@ def main() -> None:
     else:
         print(f"Static directory not found: {static_dir}")
 
-    generate_pages(content_dir, template_path, public_dir)
+    generate_pages_recursive(content_dir, template_path, public_dir)
 
 
 if __name__ == "__main__":

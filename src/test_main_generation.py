@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from main import generate_pages
+from main import generate_pages_recursive
 
 
 class TestMainGeneration(unittest.TestCase):
@@ -22,7 +22,9 @@ class TestMainGeneration(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            generate_pages(str(content_dir), str(template_path), str(public_dir))
+            generate_pages_recursive(
+                str(content_dir), str(template_path), str(public_dir)
+            )
 
             output_path = public_dir / "blog" / "glorfindel" / "index.html"
             self.assertTrue(output_path.exists())
