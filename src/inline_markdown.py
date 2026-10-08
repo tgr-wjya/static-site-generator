@@ -92,6 +92,14 @@ def _split_nodes_markdown(
     return new_nodes
 
 
+def extract_title(markdown: str) -> str:
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            return stripped[2:].strip()
+    raise ValueError("No h1 header found in markdown")
+
+
 def markdown_to_blocks(markdown: str) -> list[str]:
     blocks = markdown.split("\n\n")
     cleaned = []

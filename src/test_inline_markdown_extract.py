@@ -5,6 +5,7 @@ from inline_markdown import (
     block_to_block_type,
     extract_markdown_images,
     extract_markdown_links,
+    extract_title,
     markdown_to_blocks,
     markdown_to_html_node,
     split_nodes_image,
@@ -186,6 +187,12 @@ This is the same paragraph on a new line
             block_to_block_type("This is a normal paragraph with **bold** text."),
         )
 
+    def test_extract_title(self):
+        self.assertEqual("Hello", extract_title("# Hello"))
+        self.assertEqual("Tolkien Fan Club", extract_title("# Tolkien Fan Club\n\nText"))
+        with self.assertRaises(ValueError):
+            extract_title("## Heading only")
+
     def test_paragraphs(self):
         md = """
 This is **bolded** paragraph
@@ -199,6 +206,13 @@ This is another paragraph with _italic_ text and `code` here
         self.assertEqual(
             node.to_html(),
             "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_image_renders_without_text_value(self):
+        node = markdown_to_html_node("![Tolkien](/images/tolkien.png)")
+        self.assertEqual(
+            node.to_html(),
+            '<div><p><img src="/images/tolkien.png" alt="Tolkien"></p></div>',
         )
 
     def test_codeblock(self):
