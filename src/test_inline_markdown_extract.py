@@ -189,7 +189,9 @@ This is the same paragraph on a new line
 
     def test_extract_title(self):
         self.assertEqual("Hello", extract_title("# Hello"))
-        self.assertEqual("Tolkien Fan Club", extract_title("# Tolkien Fan Club\n\nText"))
+        self.assertEqual(
+            "Tolkien Fan Club", extract_title("# Tolkien Fan Club\n\nText")
+        )
         with self.assertRaises(ValueError):
             extract_title("## Heading only")
 
