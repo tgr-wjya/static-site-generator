@@ -1,7 +1,8 @@
 import re
 from enum import Enum
 
-from textnode import TextNode, TextType
+from htmlnode import ParentNode
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class BlockType(Enum):
@@ -99,6 +100,49 @@ def markdown_to_blocks(markdown: str) -> list[str]:
         if stripped:
             cleaned.append(stripped)
     return cleaned
+
+
+def text_to_children(text: str) -> list[ParentNode]:
+    text_nodes = text_to_textnodes(text)
+    return [text_node_to_html_node(node) for node in text_nodes]
+
+
+def markdown_to_html_node(markdown: str) -> ParentNode:
+    root = ParentNode("div", [])
+    for block in markdown_to_blocks(markdown):
+        block_type = block_to_block_type(block)
+
+        if block_type == BlockType.HEADING:
+            level = len(block) - len(block.lstrip("#"))
+            text = block[level + 1 :].strip()
+            root.children.append(ParentNode(f"h{level}", text_to_children(text)))
+        elif block_type == BlockType.CODE:
+            code_text = block[4:-3]
+            code_node = text_node_to_html_node(TextNode(code_text, TextType.CODE))
+            root.children.append(ParentNode("pre", [code_node]))
+        elif block_type == BlockType.QUOTE:
+            quote_text = " ".join(
+                line.lstrip().lstrip("> ").lstrip(">").strip()
+                for line in block.splitlines()
+            )
+            root.children.append(ParentNode("blockquote", text_to_children(quote_text)))
+        elif block_type == BlockType.UNORDERED_LIST:
+            items = []
+            for line in block.splitlines():
+                item_text = line[2:]
+                items.append(ParentNode("li", text_to_children(item_text)))
+            root.children.append(ParentNode("ul", items))
+        elif block_type == BlockType.ORDERED_LIST:
+            items = []
+            for line in block.splitlines():
+                item_text = re.sub(r"^\d+\. ", "", line)
+                items.append(ParentNode("li", text_to_children(item_text)))
+            root.children.append(ParentNode("ol", items))
+        else:
+            paragraph_text = block.replace("\n", " ")
+            root.children.append(ParentNode("p", text_to_children(paragraph_text)))
+
+    return root
 
 
 def text_to_textnodes(text: str) -> list[TextNode]:
