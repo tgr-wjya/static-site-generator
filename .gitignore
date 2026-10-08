@@ -8,7 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-public/
 build/
 develop-eggs/
 dist/
@@ -159,9 +158,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Generated site output
-public/
 
 # Spyder project settings
 .spyderproject

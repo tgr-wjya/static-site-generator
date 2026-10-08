@@ -1,30 +1,83 @@
-# static-site-generator
+# static site generator
 
-8 october 2026
+### 8 october 2026
 
-> my own static site generator
+> building my own static site generator
 
-this is a static site generator takes raw content files (markdown and images) and turns them into a static website (html and css).
+this is a small static site generator that turns markdown content and static
+assets into a website. it started as a boot.dev exercise and became another
+place for me to understand how the pieces of a web project fit together.
 
-### explore
+## explore
 
-- [building a static site generator](#static-site-generator)
+- [static site generator](#static-site-generator)
   - [what it does](#what-it-does)
+  - [live url](#live-url)
   - [setup](#setup)
+  - [usage](#usage)
+  - [test](#test)
   - [stack](#stack)
   - [find me](#find-me)
 
-### what it does
+## what it does
 
-the repo currently host a static file
+the generator currently:
 
-### setup
+- walks through the `content/` directory recursively
+- turns markdown files into html pages
+- copies images and css from `static/`
+- rewrites root-relative links for local and github pages builds
+- writes the finished site to `docs/`
 
-currently none, but stay tuned
+## live url
 
-### stack
+the site is live here: [static site generator](https://tgr-wjya.github.io/static-site-generator/)
 
-python
+## setup
+
+this project uses Python 3.13+ and `uv`.
+
+```bash
+uv sync
+```
+
+## usage
+
+generate the site for local development:
+
+```bash
+python3 src/main.py
+```
+
+serve the generated site at `http://localhost:8888`:
+
+```bash
+./main.sh
+```
+
+build the site with its github pages base path:
+
+```bash
+./build.sh
+```
+
+the base path can also be passed directly:
+
+```bash
+python3 src/main.py "/static-site-generator/"
+```
+
+## test
+
+run the test suite with:
+
+```bash
+python3 -m unittest discover -s src
+```
+
+## stack
+
+python + unittest + github pages
 
 ## find me
 
