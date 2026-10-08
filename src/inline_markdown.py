@@ -1,6 +1,39 @@
 import re
+from enum import Enum
 
 from textnode import TextNode, TextType
+
+
+class BlockType(Enum):
+    HEADING = "heading"
+    CODE = "code"
+    QUOTE = "quote"
+    UNORDERED_LIST = "unordered_list"
+    ORDERED_LIST = "ordered_list"
+    PARAGRAPH = "paragraph"
+
+
+def block_to_block_type(block: str) -> BlockType:
+    if re.fullmatch(r"#{1,6} .+", block):
+        return BlockType.HEADING
+
+    if block.startswith("```\n") and block.endswith("```"):
+        return BlockType.CODE
+
+    lines = block.splitlines()
+    if lines and all(re.fullmatch(r"> ?.*", line) for line in lines):
+        return BlockType.QUOTE
+
+    if lines and all(re.fullmatch(r"- .+", line) for line in lines):
+        return BlockType.UNORDERED_LIST
+
+    if lines and all(
+        re.fullmatch(rf"{index}\. .+", line)
+        for index, line in enumerate(lines, start=1)
+    ):
+        return BlockType.ORDERED_LIST
+
+    return BlockType.PARAGRAPH
 
 
 def extract_markdown_images(text: str) -> list[tuple[str, str]]:
@@ -56,6 +89,16 @@ def _split_nodes_markdown(
             new_nodes.append(TextNode(remaining, TextType.TEXT))
 
     return new_nodes
+
+
+def markdown_to_blocks(markdown: str) -> list[str]:
+    blocks = markdown.split("\n\n")
+    cleaned = []
+    for block in blocks:
+        stripped = block.strip()
+        if stripped:
+            cleaned.append(stripped)
+    return cleaned
 
 
 def text_to_textnodes(text: str) -> list[TextNode]:
