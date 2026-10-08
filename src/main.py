@@ -46,21 +46,34 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> None:
         output_file.write(generated)
 
 
+def generate_pages(content_dir: str, template_path: str, public_dir: str) -> None:
+    for root, _, files in os.walk(content_dir):
+        for filename in sorted(files):
+            if not filename.endswith(".md"):
+                continue
+
+            source_path = os.path.join(root, filename)
+            relative_path = os.path.relpath(source_path, content_dir)
+            destination_path = os.path.join(
+                public_dir,
+                os.path.splitext(relative_path)[0] + ".html",
+            )
+            generate_page(source_path, template_path, destination_path)
+
+
 def main() -> None:
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     static_dir = os.path.join(root_dir, "static")
     public_dir = os.path.join(root_dir, "public")
+    content_dir = os.path.join(root_dir, "content")
+    template_path = os.path.join(root_dir, "template.html")
 
     if os.path.exists(static_dir):
         copy_directory_contents(static_dir, public_dir)
     else:
         print(f"Static directory not found: {static_dir}")
 
-    generate_page(
-        os.path.join(root_dir, "content", "index.md"),
-        os.path.join(root_dir, "template.html"),
-        os.path.join(public_dir, "index.html"),
-    )
+    generate_pages(content_dir, template_path, public_dir)
 
 
 if __name__ == "__main__":
